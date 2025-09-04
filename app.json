@@ -1,7 +1,7 @@
 {
-  "name": "Banword PROTECTOR",
+  "name": "Abuse Banword PROTECTOR",
   "description": "Telegram Bot using Pyrogram",
-  "repository": "https://github.com/Aashik-team/Banword",
+  "repository": "https://github.com/shivmish8090/Abuse",
   "env": {
     "API_ID": {
       "description": "Your Telegram API ID",
