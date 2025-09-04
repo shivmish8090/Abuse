@@ -22,7 +22,7 @@ async def show_help(_, query: CallbackQuery):
 async def help_admin(_, query: CallbackQuery):
     await query.message.edit_text(
         """**Admin Commands:**
-•owner = @aashikteam""",
+•𝖯𝗈𝗐𝖾𝗋𝖽 𝖡𝗒 𝖳𝖾𝖺𝗆 𝖣𝗇𝗌 = @Team_Dns_Network""",
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton("« Back", callback_data="show_help")]]
         )
