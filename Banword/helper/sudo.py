@@ -1,8 +1,10 @@
-from config import MONGO_URL
 from motor.motor_asyncio import AsyncIOMotorClient as MongoCli
+
+from config import MONGO_URL
 
 mongo = MongoCli(MONGO_URL)
 sudodb = mongo.sudo.sudousers  # 'sudo' database aur 'sudousers' collection
+
 
 # ADD SUDO USER
 async def add_sudo(user_id: int):
@@ -11,6 +13,7 @@ async def add_sudo(user_id: int):
         return
     await sudodb.insert_one({"user_id": user_id})
 
+
 # REMOVE SUDO USER
 async def remove_sudo(user_id: int):
     """Remove a user from sudoers."""
@@ -18,10 +21,12 @@ async def remove_sudo(user_id: int):
         return
     await sudodb.delete_one({"user_id": user_id})
 
+
 # CHECK SUDO
 async def is_sudo(user_id: int) -> bool:
     """Check if a user is in sudo list."""
     return bool(await sudodb.find_one({"user_id": user_id}))
+
 
 # GET ALL SUDOERS (FIXED)
 async def get_sudoers() -> list:

@@ -1,10 +1,18 @@
 import asyncio
-from pyrogram.errors import PeerIdInvalid, UserIsBlocked, InputUserDeactivated, FloodWait
+
+from pyrogram import filters
+from pyrogram.errors import (
+    FloodWait,
+    InputUserDeactivated,
+    PeerIdInvalid,
+    UserIsBlocked,
+)
 from pyrogram.types import Message
-from pyrogram import Client, filters, enums
-from config import OWNER_ID
-from Banword.helper.database import get_users, get_chats
+
 from Banword import Banword as app
+from Banword.helper.database import get_chats, get_users
+from config import OWNER_ID
+
 
 @app.on_message(filters.command("broadcast") & filters.user(OWNER_ID))
 async def broadcast_handler(client, message: Message):
@@ -21,8 +29,7 @@ async def broadcast_handler(client, message: Message):
     targets = set(users_data["users"] + chats_data["chats"])
 
     status = await message.reply(
-        f"▣ Starting broadcast...\n\n"
-        f"Total targets: {len(targets)}"
+        f"▣ Starting broadcast...\n\n" f"Total targets: {len(targets)}"
     )
 
     for uid in targets:
@@ -30,7 +37,7 @@ async def broadcast_handler(client, message: Message):
             await client.copy_message(
                 chat_id=uid,
                 from_chat_id=message.chat.id,
-                message_id=message.reply_to_message.id
+                message_id=message.reply_to_message.id,
             )
             sent += 1
             await asyncio.sleep(0.05)

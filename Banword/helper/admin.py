@@ -1,8 +1,9 @@
-from typing import Callable, Union
 from functools import wraps
+from typing import Callable, Union
+
 from pyrogram import Client
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import Message, CallbackQuery
+from pyrogram.types import CallbackQuery, Message
 
 from Banword import Banword as app
 from config import OWNER_ID
@@ -39,4 +40,5 @@ def admin_only(func: Callable) -> Callable:
                     await m.reply_text("Only admins can use this!")
         except Exception as e:
             print(f"[admin_only Error] {e}")
+
     return wrapper

@@ -1,9 +1,18 @@
 import asyncio
-from config import OWNER_ID
-from pyrogram import *
-from pyrogram.types import *
+import traceback
+
+from pyrogram import filters
+from pyrogram.errors import (
+    FloodWait,
+    InputUserDeactivated,
+    PeerIdInvalid,
+    UserIsBlocked,
+)
+
 from Banword import Banword as app
-from Banword.helper.database import get_users, get_chats
+from Banword.helper.database import get_chats, get_users
+from config import OWNER_ID
+
 
 async def send_msg(user_id, message):
     try:
@@ -25,7 +34,7 @@ async def send_msg(user_id, message):
 async def broadcast(_, message):
     if not message.reply_to_message:
         await message.reply_text("✦ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ɪᴛ.")
-        return    
+        return
     exmsg = await message.reply_text("✦ sᴛᴀʀᴛᴇᴅ ʙʀᴏᴀᴅᴄᴀsᴛɪɴɢ !")
     all_chats = (await get_chats()) or {}
     all_users = (await get_users()) or {}
@@ -39,7 +48,6 @@ async def broadcast(_, message):
             done_chats += 1
             await asyncio.sleep(0.1)
         except Exception:
-            pass
             failed_chats += 1
 
     for user in all_users:
@@ -48,7 +56,6 @@ async def broadcast(_, message):
             done_users += 1
             await asyncio.sleep(0.1)
         except Exception:
-            pass
             failed_users += 1
     if failed_users == 0 and failed_chats == 0:
         await exmsg.edit_text(
@@ -60,35 +67,38 @@ async def broadcast(_, message):
         )
 
 
-
-
-
 @app.on_message(filters.command("announce") & filters.user(OWNER_ID))
 async def announced(_, message):
     if message.reply_to_message:
-      to_send=message.reply_to_message.id
+        to_send = message.reply_to_message.id
     if not message.reply_to_message:
-      return await message.reply_text("✦ ʀᴇᴘʟʏ ᴛᴏ ᴍᴇssᴀɢᴇ ғᴏʀ ᴀɴɴᴏᴜɴᴄᴇ.")
+        return await message.reply_text("✦ ʀᴇᴘʟʏ ᴛᴏ ᴍᴇssᴀɢᴇ ғᴏʀ ᴀɴɴᴏᴜɴᴄᴇ.")
     chats = await get_chats() or []
     users = await get_users() or []
     print(chats)
     print(users)
     failed = 0
     for chat in chats:
-      try:
-        await Nexus.forward_messages(chat_id=int(chat), from_chat_id=message.chat.id, message_ids=to_send)
-        await asyncio.sleep(1)
-      except Exception:
-        failed += 1
-    
+        try:
+            await app.forward_messages(
+                chat_id=int(chat), from_chat_id=message.chat.id, message_ids=to_send
+            )
+            await asyncio.sleep(1)
+        except Exception:
+            failed += 1
+
     failed_user = 0
     for user in users:
-      try:
-        await Nexus.forward_messages(chat_id=int(user), from_chat_id=message.chat.id, message_ids=to_send)
-        await asyncio.sleep(1)
-      except Exception as e:
-        failed_user += 1
+        try:
+            await app.forward_messages(
+                chat_id=int(user), from_chat_id=message.chat.id, message_ids=to_send
+            )
+            await asyncio.sleep(1)
+        except Exception:
+            failed_user += 1
 
-
-    await message.reply_text("✦ ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴘʟᴇᴛᴇ {} ɢʀᴏᴜᴘs ғᴀɪʟᴇᴅ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴍᴇssᴀɢᴇ, ᴘʀᴏʙᴀʙʟʏ ᴅᴜᴇ ᴛᴏ ʙᴇɪɴɢ ᴋɪᴄᴋᴇᴅ.\n\n✦  {} ᴜsᴇʀs ғᴀɪʟᴇᴅ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴍᴇssᴀɢᴇ, ᴘʀᴏʙᴀʙʟʏ ᴅᴜᴇ ᴛᴏ ʙᴇɪɴɢ ʙᴀɴɴᴇᴅ.".format(failed, failed_user))
-      
+    await message.reply_text(
+        "✦ ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴘʟᴇᴛᴇ {} ɢʀᴏᴜᴘs ғᴀɪʟᴇᴅ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴍᴇssᴀɢᴇ, ᴘʀᴏʙᴀʙʟʏ ᴅᴜᴇ ᴛᴏ ʙᴇɪɴɢ ᴋɪᴄᴋᴇᴅ.\n\n✦  {} ᴜsᴇʀs ғᴀɪʟᴇᴅ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ᴍᴇssᴀɢᴇ, ᴘʀᴏʙᴀʙʟʏ ᴅᴜᴇ ᴛᴏ ʙᴇɪɴɢ ʙᴀɴɴᴇᴅ.".format(
+            failed, failed_user
+        )
+    )

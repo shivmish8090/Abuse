@@ -1,11 +1,17 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from Banword import Banword as app
-from Banword.helper.database import get_users, get_chats, get_new_users, get_new_chats
+from Banword.helper.database import (
+    get_chats,
+    get_new_chats,
+    get_new_users,
+    get_users,
+)
+from config import OWNER_ID
 
 
-@app.on_message(filters.command("stats") & filters.private)
+@app.on_message(filters.command("stats") & filters.user(OWNER_ID))
 async def stats_handler(client: Client, message: Message):
     user_data = await get_users()
     chat_data = await get_chats()
@@ -23,8 +29,8 @@ async def stats_handler(client: Client, message: Message):
         f"**New Chats (24 hrs):** `{new_chats}`"
     )
 
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Close", callback_data="close")]
-    ])
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Close", callback_data="close")]]
+    )
 
     await message.reply_text(text, reply_markup=keyboard)

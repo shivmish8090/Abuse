@@ -1,88 +1,362 @@
-import re
-import asyncio
-from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+import ahocorasick
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from Banword import Banword as app
-from config import OTHER_LOGS, BOT_USERNAME
 
 # List of 18+ or abusive words (expandable)
 BAD_WORDS = [
     # 18+ related words
-    "18+", "sex", "porn", "nude", "blowjob", "boobs", "bobs", "condom", "xxx", "adult", "nangi", "randi", 
-
+    "18+",
+    "sex",
+    "porn",
+    "nude",
+    "blowjob",
+    "boobs",
+    "bobs",
+    "condom",
+    "xxx",
+    "adult",
+    "nangi",
+    "randi",
     # Common gaaliyan & offensive words (Hindi/English)
-    "chutiya", "madarchod", "bhenchod", "gaand", "gand", "lund", "ch**d", "g***i", "harami", "kutte", "kutta",
-    "gandu", "madharchod", "lundoo", "lodu", "bhains", "chod", "randi", "randa", "haramzada", "randi ka bacha",
-    "bhosdiwala", "bhosdike", "mc", "mcchod", "randi ki aulaad", "gand mara", "lund mar", "lauda", "loda",
-    "chodu", "chut", "chutiyapa", "chutiye", "chut ke", "chut ke laude", "chut ke bache", "bhosadike",
-    
+    "chutiya",
+    "madarchod",
+    "bhenchod",
+    "gaand",
+    "gand",
+    "lund",
+    "ch**d",
+    "g***i",
+    "harami",
+    "kutte",
+    "kutta",
+    "gandu",
+    "madharchod",
+    "lundoo",
+    "lodu",
+    "bhains",
+    "chod",
+    "randi",
+    "randa",
+    "haramzada",
+    "randi ka bacha",
+    "bhosdiwala",
+    "bhosdike",
+    "mc",
+    "mcchod",
+    "randi ki aulaad",
+    "gand mara",
+    "lund mar",
+    "lauda",
+    "loda",
+    "chodu",
+    "chut",
+    "chutiyapa",
+    "chutiye",
+    "chut ke",
+    "chut ke laude",
+    "chut ke bache",
+    "bhosadike",
     # Slang variations with stars (to catch censored forms)
-    "ch**d", "g***i", "m**ch*d", "b**chod", "b***chod"
+    "ch**d",
+    "g***i",
+    "m**ch*d",
+    "b**chod",
+    "b***chod",
+] + [
+    "sex",
+    "porn",
+    "nude",
+    "fuck",
+    "bitch",
+    "dick",
+    "pussy",
+    "slut",
+    "boobs",
+    "cock",
+    "asshole",
+    "chudai",
+    "rand",
+    "chhinar",
+    "sexy",
+    "hot girl",
+    # ✅ Common Hindi Gaaliyan in English Font
+    "chutiya",
+    "madarchod",
+    "Madhrachod",
+    "Madharchod",
+    "betichod",
+    "behenchod",
+    "gandu",
+    "randi",
+    "bhosdi",
+    "hijda",
+    "lund",
+    "chod",
+    "jhaatu",
+    "harami",
+    "kamina",
+    "saala",
+    "gand",
+    "pagal",
+    "bhadwa",
+    "chut",
+    "bevkoof",
+    "nikkamma",
+    "haramkhor",
+    "chaalu",
+    "fattuu",
+    "dhakkan",
+    "gadha",
+    "kutta",
+    "suvar",
+    "besharam",
+    "bhosdike",
+    "teri maa ki",
+    "teri behan ki",
+    "chutad",
+    "haramzaada",
+    "haram ki aulaad",
+    "suvar ka baccha",
+    "gand ka keeda",
+    "chirkut",
+    "ghatiya",
+    "sadela",
+    "choor",
+    "lutera",
+    "chichora",
+    "badtameez",
+    "baddimag",
+    "fraud",
+    "nalayak",
+    "bewda",
+    "sandass",
+    "ganda",
+    "dhongi",
+    "bhikhari",
+    "faltu",
+    "kachra",
+    "pagal kutta",
+    "badmash",
+    "aalsi",
+    "kanjoos",
+    "ghamandi",
+    "farzi",
+    "dhurt",
+    "bakchod",
+    "gappi",
+    "nakli",
+    "chalu",
+    "lafanga",
+    "bakwas",
+    "bikau",
+    "chapri",
+    "nalla",
+    "tatti",
+    "jhantu",
+    "ullu ka pattha",
+    "ulloo",
+    "chindi",
+    "panauti",
+    "lukkha",
+    "kuttiya",
+    "kaminey",
+    "kamzarf",
+    "budbak",
+    "chirkut",
+    "sust",
+    "tharki",
+    "bhagoda",
+    "kutta kamina",
+    "bhains ki aankh",
+    "teri taang tod dunga",
+    "teri band baja dunga",
+    "tera dimaag kharab hai",
+    "teri waat laga dunga",
+    "teri maa ka bhosda",
+    "teri gaand maar dunga",
+    # ✅ Common Porn & NSFW Terms (Mix of Hindi & English)
+    "sex",
+    "porn",
+    "nude",
+    "nangi",
+    "chudai",
+    "bhabhi chudai",
+    "lund",
+    "gaand",
+    "bhosda",
+    "chut",
+    "maal",
+    "jism",
+    "randi",
+    "randi khana",
+    "desi sex",
+    "hot video",
+    "nangi ladki",
+    "bhabhi nudes",
+    "bhabhi sex",
+    "sexy aunty",
+    "nude aunty",
+    "bhabhi ki chut",
+    "aunty ki chut",
+    "boobs",
+    "tits",
+    "nipple",
+    "dildo",
+    "pussy",
+    "vagina",
+    "penis",
+    "cock",
+    "dick",
+    "cum",
+    "anal",
+    "squirt",
+    "deepthroat",
+    "hentai",
+    "bdsm",
+    "lesbian",
+    "gay sex",
+    "futa",
+    "69",
+    "screwing",
+    "sex chat",
+    "incest",
+    "stepmom",
+    "stepsis",
+    "stepbro",
+    "honeymoon sex",
+    "bhabhi nude",
+    "hot indian actress",
+    "desi nudes",
+    "sexy saree",
+    "lingerie",
+    "erotic",
+    "kinky",
+    "naughty",
+    "sensual",
+    "lust",
+    "muth",
+    "muthi",
+    "masturbation",
+    "call girl",
+    "escort",
+    "sex worker",
+    "rape porn",
+    "forced porn",
+    "underage porn",
+    "child porn",
+    "pedo",
+    "loli",
+    "teen sex",
+    "schoolgirl porn",
+    "hijab porn",
+    "casting couch",
+    "sex tape",
+    "strip club",
+    "naked",
+    "uncensored",
+    "bikini photos",
+    "hot saree",
+    "sexy photos",
+    "onlyfans",
+    "patreon nudes",
+    "hot cam",
+    "sex cam",
+    "live sex",
+    "private parts",
+    "exposed",
+    "naked selfie",
+    "sex video",
+    "desi sex video",
+    "bollywood sex",
+    "lingam massage",
+    "tantra sex",
+    "milf",
+    "hotwife",
+    "swinger",
+    "erotic massage",
+    "boobs press",
+    "licking",
+    "lick pussy",
+    "moaning",
+    "dirty talk",
+    "hot girl",
+    "big boobs",
+    "tight pussy",
+    "wet pussy",
+    "hard cock",
+    "big cock",
+    "blowjob",
+    "handjob",
+    "sexy dance",
+    "strip tease",
+    "sex position",
+    "saree sex",
+    "sexy aunty video",
+    "hot desi bhabhi",
+    "bollywood hot",
+    "item girl",
+    "hot indian model",
+    "desi randi",
+    "desi call girl",
+    "sexy night",
+    "hijra sex",
+    "chudai story",
+    "sex story",
+    "suhagraat sex",
+    "honeymoon night",
+    "love making",
+    "hot romance",
+    "desi romance",
+    "hot chat",
+    "sexy time",
+    "naughty chat",
+    "dirty video",
+    "hidden cam",
+    "bathroom sex",
+    "hotel sex",
+    "massage sex",
+    "body to body massage",
+    "saree romance",
+    "choli romance",
+    "cleavage show",
+    "hot navel",
+    "desi thighs",
+    "big ass",
+    "backside show",
 ]
 
-BAD_PATTERN = re.compile(r"|".join([re.escape(word) for word in BAD_WORDS]), re.IGNORECASE)
+AC = ahocorasick.Automaton()
+for idx, word in enumerate(BAD_WORDS):
+    AC.add_word(word.lower(), (idx, word))
+AC.make_automaton()
+
+
+def contains_bad_word(text):
+    return any(True for _ in AC.iter(text.lower()))
+
 
 @app.on_message(filters.group & filters.text & ~filters.via_bot)
-async def filter_18(client: Client, message: Message):
-    text = message.text or ""
+async def filter_18(client, message):
+    text = message.text.lower().strip() or message.caption.lower().strip()
 
-    if not BAD_PATTERN.search(text):
-        return
-
-    user = message.from_user
-    if not user:
+    if not contains_bad_word(text) or not message.from_user:
         return
 
     try:
         await message.delete()
-    except:
+    except Exception:
         return
 
-    # Send warning in group
-    mention = f"[{user.first_name}](tg://user?id={user.id})"
-    warn_text = f"{mention}, 18+ messages are not allowed!"
-    cancel_btn = InlineKeyboardMarkup([[InlineKeyboardButton("Cancel", callback_data="close")]])
+    warn_text = f"{message.from_user.mention}, 18+ messages are not allowed!"
+    btn = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Updates", url="https://t.me/Team_Dns_Network"),
+                InlineKeyboardButton("Support", url="https://t.me/dns_support_group"),
+            ]
+        ]
+    )
 
-    try:
-        warn = await message.reply(warn_text, reply_markup=cancel_btn)
-        await asyncio.sleep(10)
-        await warn.delete()
-    except:
-        pass
-
-    # Logging to OTHER_LOGS group
-    username = f"@{user.username}" if user.username else "No username"
-    group_name = message.chat.title
-    chat_id = message.chat.id
-
-    log_text = f"""
-🚫 **18+ or Abusive Message Deleted**
-
-**👤 User:** {mention}
-**🆔 User ID:** `{user.id}`
-**🔗 Username:** {username}
-**🏷️ Group:** `{group_name}`
-**🆔 Chat ID:** `{chat_id}`
-**💬 Message:** `{text}`
-
-🤖 **Bot:** @{BOT_USERNAME}
-"""
-
-    try:
-        await client.send_message(
-            OTHER_LOGS,
-            log_text,
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("➕ Add to Your Group", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")]
-            ])
-        )
-    except Exception as e:
-        print(f"[LOG SEND ERROR] {e}")
-
-# Optional: Handle cancel button
-@app.on_callback_query(filters.regex("close"))
-async def close_btn(client, callback_query):
-    try:
-        await callback_query.message.delete()
-    except:
-        pass
+    await message.reply(warn_text, reply_markup=btn)

@@ -1,8 +1,9 @@
 import time
+
 from pyrogram import filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
 from Banword import Banword as app
-from config import BOT_USERNAME
 
 start_time = time.time()
 
@@ -25,6 +26,7 @@ def get_readable_time(seconds: int) -> str:
         ping_time += str(time_list[i]) + time_suffix_list[i] + " "
     return ping_time.strip()
 
+
 @app.on_message(filters.command("ping", prefixes=["/", "!", "%", ",", ".", "@", "#"]))
 async def ping_command(_, message: Message):
     start = time.time()
@@ -33,16 +35,11 @@ async def ping_command(_, message: Message):
     speed = round((end - start) * 1000)
     uptime = get_readable_time(time.time() - start_time)
 
-    buttons = [
-        [
-            InlineKeyboardButton("🚀 Update", url="https://t.me/Team_Dns_Network")
-        ]
-    ]
+    buttons = [[InlineKeyboardButton("🚀 Update", url="https://t.me/Team_Dns_Network")]]
 
     await reply.edit_text(
         f"**ʜᴇʏ! ɪ ᴀᴍ ᴀʟɪᴠᴇ ᴀɴᴅ ᴋɪᴄᴋɪɴɢ!**\n\n"
         f"**⇝ ᴘɪɴɢ:** `{speed} ms`\n"
-        f"**⇝ ᴜᴘᴛɪᴍᴇ:** `{uptime}`\n"
-        f"**⇝ ʙᴏᴛ: @{BOT_USERNAME}**",
-        reply_markup=InlineKeyboardMarkup(buttons)
+        f"**⇝ ᴜᴘᴛɪᴍᴇ:** `{uptime}`\n",
+        reply_markup=InlineKeyboardMarkup(buttons),
     )
