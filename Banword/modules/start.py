@@ -5,30 +5,30 @@ from config import OWNER_ID, BOT_USERNAME
 from Banword import Banword as app
 from Banword.helper.database import add_user, add_chat
 
-START_IMG = "https://files.catbox.moe/05x8mv.jpg"
+START_IMG = "https://files.catbox.moe/iem38x.jpg"
 
 def get_start_caption(user):
     return f"""
-**ʜᴇʏ** {user.mention} 🥀
+**𝖧𝖾𝗒** {user.mention} 
 
-🤖 I am a **Banword Remover Bot**.
-I delete messages with Banword and restrict users who have Banword .
+🤖 I am a **Abuse Remover Bot**.
+I delete messages with Abuse word and restrict users who have Banword .
 
 🚫 I also delete messages with **Banword**.
 """
 
 START_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("• ᴀᴅᴅ ᴍᴇ •", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")],
-    [InlineKeyboardButton("• ʜᴇʟᴘ ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅ •", callback_data="show_help")],
+    [InlineKeyboardButton("𝖠𝖽𝖽 𝖬𝖾", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")],
+    [InlineKeyboardButton("𝖧𝖾𝗅𝗉 𝖠𝗇𝖽 𝖢𝗈𝗆𝗆𝖺𝗇𝖽", callback_data="show_help")],
     [
-        InlineKeyboardButton("• ʟᴏɢs •", url="https://t.me/networkxlog"),
-        InlineKeyboardButton("• ᴜᴘᴅᴀᴛᴇ •", url="https://t.me/aashikteam")
+        InlineKeyboardButton("𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url="https://t.me/dns_support_group"),
+        InlineKeyboardButton("𝖴𝗉𝖽𝖺𝗍𝖾", url="https://t.me/Team_Dns_Network")
     ],
-    [InlineKeyboardButton("🥀 ᴅᴇᴠᴇʟᴏᴩᴇʀ 🥀", url="https://t.me/shivang_mishra_op")]
+    [InlineKeyboardButton("𝖮𝗐𝗇𝖾𝗋", url="https://t.me/II_RAJPUT_SHIV_OP_II")]
 ])
 
 PRIVATE_START_BUTTON = InlineKeyboardMarkup([
-    [InlineKeyboardButton("• ᴘʀɪᴠᴀᴛᴇ ꜱᴛᴀʀᴛ •", url=f"https://t.me/{BOT_USERNAME}?start=help")]
+    [InlineKeyboardButton("𝖯𝗋𝗂𝗏𝖺Ban𝗍𝖺𝗋𝗍", url=f"https://t.me/{BOT_USERNAME}?start=help")]
 ])
 
 @app.on_message(filters.command("start") & (filters.private | filters.group))
@@ -49,7 +49,7 @@ async def start_command(_, message: Message):
         )
     else:
         await message.reply_text(
-            f"**ʜᴇʏ {user.mention}, ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ!**",
+            f"**𝖧𝖾𝗒 {user.mention}, 𝖳𝗁𝖺𝗇𝗄𝗌 𝖥𝗈𝗋 𝖠𝖽𝖽𝗂𝗇𝗀 𝖬𝖾!**",
             reply_markup=PRIVATE_START_BUTTON
         )
 
