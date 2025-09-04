@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 import ahocorasick
-from pyrogram import filters
+from pyrogram import filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from Banword import Banword as app
@@ -332,16 +333,38 @@ for idx, word in enumerate(BAD_WORDS):
     AC.add_word(word.lower(), (idx, word))
 AC.make_automaton()
 
+cache = {}
+CACHE_TTL = timedelta(minutes=10)
 
 def contains_bad_word(text):
     return any(True for _ in AC.iter(text.lower()))
 
+async def get_admins(chat_id):
+    now = datetime.utcnow()
+    if chat_id in cache:
+        entry = cache[chat_id]
+        if now < entry["expires"]:
+            return entry["admins"]
+
+    admins = []
+    async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+        admins.append(m.user.id)
+
+    cache[chat_id] = {"admins": admins, "expires": now + CACHE_TTL}
+    return admins
 
 @app.on_message(filters.group & filters.text & ~filters.via_bot)
 async def filter_18(client, message):
-    text = message.text.lower().strip() or message.caption.lower().strip()
+    text = (message.text or message.caption or "").lower().strip()
+    if not text or not message.from_user:
+        return
 
-    if not contains_bad_word(text) or not message.from_user:
+    if not contains_bad_word(text):
+        return
+
+    admin_ids = await get_admins(message.chat.id)
+
+    if message.from_user.id in admin_ids:
         return
 
     try:
@@ -358,5 +381,4 @@ async def filter_18(client, message):
             ]
         ]
     )
-
     await message.reply(warn_text, reply_markup=btn)
