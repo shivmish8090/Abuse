@@ -415,8 +415,8 @@ async def filter_18(client, message):
     btn = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("Updates", url="https://t.me/Team_Dns_Network"),
-                InlineKeyboardButton("Support", url="https://t.me/dns_support_group"),
+                InlineKeyboardButton("🚀 𝗨𝗽𝗱𝗮𝘁𝗲", url="https://t.me/Team_Dns_Network"),
+                InlineKeyboardButton("💬 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", url="https://t.me/dns_support_group"),
             ]
         ]
     )
