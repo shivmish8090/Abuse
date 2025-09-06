@@ -13,7 +13,7 @@ from Banword import Banword as app
 async def show_help(_, query: CallbackQuery):
     keyboard = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("Admin Commands", callback_data="help_admin")],
+            [InlineKeyboardButton("𝗔𝗱𝗺𝗶𝗻 𝗖𝗼𝗺𝗺𝗮𝗻𝗱𝘀", callback_data="help_admin")],
             [InlineKeyboardButton("« Back", callback_data="back_to_start")],
         ]
     )
