@@ -29,13 +29,13 @@ def start_btn(u):
 
     return InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("𝖠𝖽𝖽 𝖬𝖾", url=f"https://t.me/{u}?startgroup=true")],
-            [InlineKeyboardButton("𝖧𝖾𝗅𝗉 𝖠𝗇𝖽 𝖢𝗈𝗆𝗆𝖺𝗇𝖽", callback_data="show_help")],
+            [InlineKeyboardButton("𝗔𝗱𝗱 𝗠𝗲 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽", url=f"https://t.me/{u}?startgroup=true")],
+            [InlineKeyboardButton("𝗛𝗲𝗹𝗽", callback_data="show_help")],
             [
-                InlineKeyboardButton("𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url="https://t.me/dns_support_group"),
-                InlineKeyboardButton("𝖴𝗉𝖽𝖺𝗍𝖾", url="https://t.me/Team_Dns_Network"),
+                InlineKeyboardButton("💬 𝗦𝘂𝗽𝗽𝗼𝗿𝘁", url="https://t.me/dns_support_group"),
+                InlineKeyboardButton("🚀 𝗨𝗽𝗱𝗮𝘁𝗲", url="https://t.me/Team_Dns_Network"),
             ],
-            [InlineKeyboardButton("𝖮𝗐𝗇𝖾𝗋", url="https://t.me/II_RAJPUT_SHIV_OP_II")],
+            [InlineKeyboardButton("𝗢𝘄𝗻𝗲𝗿", url="https://t.me/II_RAJPUT_SHIV_OP_II")],
         ]
     )
 
